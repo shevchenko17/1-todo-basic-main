@@ -1,90 +1,161 @@
-import React, { useState } from 'react';
-import { useTodos }  from '../../contexts/TodoContext';
-import AddTodo from '../AddTodo/AddTodo';
-import TodoItem from   '../TodoItem/Todoitem';    
-import type { Todo, SortOption, FilterOption } from '../../types/todo';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import  {  type AppDispatch,type RootState } from '../../store';
+import {
+  loadTodos,
+  setPage,
+  setLimit,
+  setFilter,
+  addTodo,
+  toggleTodoStatus,
+  removeTodo,
+} from '../../store/todoSlice';
+import {
+ type SelectChangeEvent,
+  CircularProgress,
+  Alert,
+  Pagination,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Button,
+  Box,
+} from '@mui/material';
+import TodoItem from '../TodoItem/Todoitem';
 import * as S from './TodoList.styles';
 
 const TodoList: React.FC = () => {
-  const { todos } = useTodos();
-  const [sortOption, setSortOption] = useState<SortOption>('newest');
-  const [filterOption, setFilterOption] = useState<FilterOption>('all');
+  const dispatch = useDispatch<AppDispatch>();
+  const { todos, page, limit, filter, total, loading, error } = useSelector(
+    (state: RootState) => state.todos
+  );
 
-  const sortTodos = (todosToSort: Todo[]) => {
-    return [...todosToSort].sort((a, b) => {
-      if (sortOption === 'newest') {
-        return b.createdAt.getTime() - a.createdAt.getTime();
-      } else {
-        return a.createdAt.getTime() - b.createdAt.getTime();
-      }
-    });
+  const [newTodoText, setNewTodoText] = useState('');
+
+
+  useEffect(() => {
+    dispatch(loadTodos({ page, limit, filter }));
+  }, [dispatch, page, limit, filter]);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    dispatch(setPage(value));
   };
 
-  const filterTodos = (todosToFilter: Todo[]) => {
-    switch (filterOption) {
-      case 'active':
-        return todosToFilter.filter(todo => !todo.completed);
-      case 'completed':
-        return todosToFilter.filter(todo => todo.completed);
-      default:
-        return todosToFilter;
+  const handleLimitChange = (event: SelectChangeEvent <number>) => {
+    dispatch(setLimit( Number(event.target.value)));
+  };
+
+  const handleFilterChange = ( event: SelectChangeEvent) => {
+    dispatch(setFilter(event.target.value as 'all' | 'active' | 'completed'));
+  };
+
+  const handleAddTodo = async () => {
+    if (newTodoText.trim()) {
+      await dispatch(addTodo(newTodoText.trim()));
+      setNewTodoText('');
     }
   };
 
-  const filteredAndSortedTodos = sortTodos(filterTodos(todos));
+  const handleToggle = (id: number) => {
+    dispatch(toggleTodoStatus(id));
+  };
 
-  const activeTodosCount = todos.filter(todo => !todo.completed).length;
-  const completedTodosCount = todos.filter(todo => todo.completed).length;
+  const handleDelete = (id: number) => {
+    dispatch(removeTodo(id));
+  };
+
+  const totalPages = Math.ceil(total / limit);
+
+ 
+  const activeCount = todos.filter(t => !t.completed).length;
+  const completedCount = todos.filter(t => t.completed).length;
 
   return (
     <S.Container>
       <S.Header>
         <S.Title>Список задач</S.Title>
         <S.Stats>
-          Активных: {activeTodosCount} | Выполненных: {completedTodosCount} | Всего: {todos.length}
+          Активных: {activeCount} | Выполненных: {completedCount} | Всего: {total}
         </S.Stats>
       </S.Header>
 
-      <AddTodo />
+      <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+        <TextField
+          fullWidth
+          label="Новая задача"
+          value={newTodoText}
+          onChange={(e) => setNewTodoText(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
+        />
+        <Button variant="contained" onClick={handleAddTodo} disabled={loading}>
+          Добавить
+        </Button>
+      </Box>
 
       <S.Controls>
         <S.SelectGroup>
-          <S.Select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value as SortOption)}
-            aria-label="Сортировка задач"
-          >
-            <option value="newest">Сначала новые</option>
-            <option value="oldest">Сначала старые</option>
-          </S.Select>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Фильтр</InputLabel>
+            <Select value={filter} onChange={handleFilterChange} label="Фильтр">
+              <MenuItem value="all">Все задачи</MenuItem>
+              <MenuItem value="active">Активные</MenuItem>
+              <MenuItem value="completed">Выполненные</MenuItem>
+            </Select>
+          </FormControl>
 
-          <S.Select
-            value={filterOption}
-            onChange={(e) => setFilterOption(e.target.value as FilterOption)}
-            aria-label="Фильтрация задач"
-          >
-            <option value="all">Все задачи</option>
-            <option value="active">Активные</option>
-            <option value="completed">Выполненные</option>
-          </S.Select>
+          <FormControl size="small" sx={{ minWidth: 100 }}>
+            <InputLabel>На странице</InputLabel>
+            <Select value={limit} onChange={handleLimitChange} label="На странице">
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+            </Select>
+          </FormControl>
         </S.SelectGroup>
       </S.Controls>
 
-      {filteredAndSortedTodos.length === 0 ? (
-        <S.EmptyState>
-          {todos.length === 0 
-            ? 'Задачи отсутствуют. Добавьте первую задачу!' 
-            : 'Задачи не найдены по выбранному фильтру'}
-        </S.EmptyState>
-      ) : (
-        <S.List>
-          {filteredAndSortedTodos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-            />
-          ))}
-        </S.List>
+     
+      {loading && <CircularProgress sx={{ display: 'block', mx: 'auto', my: 2 }} />}
+
+    
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+    
+      {!loading && !error && (
+        <>
+          {todos.length === 0 ? (
+            <S.EmptyState>
+              {total === 0
+                ? 'Задачи отсутствуют. Добавьте первую задачу!'
+                : 'Задачи не найдены по выбранному фильтру'}
+            </S.EmptyState>
+          ) : (
+            <S.List>
+              {todos.map((todo) => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={() => handleToggle(todo.id)}
+                  onDelete={() => handleDelete(todo.id)}
+                />
+              ))}
+            </S.List>
+          )}
+
+        
+          {totalPages > 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+                color="primary"
+              />
+            </Box>
+          )}
+        </>
       )}
     </S.Container>
   );

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as S from './EditTodo.styles';
-
 interface EditTodoProps {
   initialText: string;
   onSave: (newText: string) => void;
@@ -47,7 +46,7 @@ const EditTodo: React.FC<EditTodoProps> = ({
       return;
     }
 
-   
+   console.log('EditTodo onSave', trimmedText);
     onSave(trimmedText);
   };
 

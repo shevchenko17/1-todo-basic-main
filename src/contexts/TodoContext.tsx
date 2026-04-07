@@ -53,7 +53,7 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
       id: Date.now(), // Используем timestamp как ID
       text: text.trim(),
       completed: false,
-      createdAt: new Date(),
+      createdAt:  Date.now(),
     };
     
     setTodos(prevTodos => [newTodo, ...prevTodos]);
@@ -69,11 +69,12 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
   };
 
   
-  const deleteTodo = (id: number) => {
+  const deleteTodo  = (id: number) => {
     setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
   };
 
   const editTodo = (id: number, newText: string) => {
+    console.log('handleSave fired', { id, newText,  });
     setTodos(prevTodos =>
       prevTodos.map(todo =>
         todo.id === id ? { ...todo, text: newText.trim() } : todo

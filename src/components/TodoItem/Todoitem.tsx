@@ -1,46 +1,43 @@
 
 import React, { useState } from 'react';
-import { useTodos } from '../../contexts/TodoContext';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../../store';
+import { editTodo, toggleTodoStatus, removeTodo } from '../../store/todoSlice';
 import EditTodo from '../EditTodo/EditTodo';
 import type { Todo } from '../../types/todo';
 import * as S from './TodoItem.styles';
+import { Trash2, Pencil} from 'lucide-react';
 
 interface TodoItemProps {
   todo: Todo;
+  onToggle: () => void;
+  onDelete: () => void;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const { toggleTodo, deleteTodo, editTodo } = useTodos();
+const dispatch = useDispatch<AppDispatch>();
 
-  const handleSave = (newText: string) => {
-    editTodo(todo.id, newText);
-    setIsEditing(false);
-  };
+const handleSave = (newText: string) => {
+  dispatch(editTodo({ id: todo.id, text: newText, completed: todo.completed }));
+  setIsEditing(false);
+};
+
+const handleToggle = () => {
+  dispatch(toggleTodoStatus(todo.id));
+};
+
+const handleDelete = () => {
+  if (window.confirm('Вы уверены, что хотите удалить эту задачу?')) {
+    dispatch(removeTodo(todo.id));
+  }
+};
 
   const handleCancel = () => {
     setIsEditing(false);
   };
 
-  const handleToggle = () => {
-    toggleTodo(todo.id);
-  };
 
-  const handleDelete = () => {
-    if (window.confirm('Вы уверены, что хотите удалить эту задачу?')) {
-      deleteTodo(todo.id);
-    }
-  };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   if (isEditing) {
     return (
@@ -67,7 +64,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
 
       <S.Content $completed={todo.completed}>
         <S.Text>{todo.text}</S.Text>
-        <S.Date>{formatDate(todo.createdAt)}</S.Date>
+        <S.Date>{(todo.createdAt)}</S.Date>
       </S.Content>
 
       <S.Actions>
@@ -76,7 +73,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
           title="Редактировать задачу"
           aria-label="Редактировать задачу"
         >
-          <S.EditIcon>✏️</S.EditIcon>
+         <Pencil color="#ba3baf" />
           Редактировать
         </S.EditButton>
         
@@ -85,7 +82,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
           title="Удалить задачу"
           aria-label="Удалить задачу"
         >
-          <S.DeleteIcon>🗑️</S.DeleteIcon>
+          <Trash2 color="#3bba54" />
           Удалить
         </S.DeleteButton>
       </S.Actions>
