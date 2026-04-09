@@ -2,7 +2,8 @@ export interface Todo {
   id: number;
   text: string;
   completed: boolean;
-  createdAt: number;
+  createdAt: string;  
+  userId: number;      
 }
 
 export type SortOption = 'newest' | 'oldest';

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom'; 
 
 export const HeaderContainer = styled.header`
   background-color: ${({ theme }) => theme.container};
@@ -95,5 +96,39 @@ export const ThemeIcon = styled.span`
 export const ThemeText = styled.span`
   @media (max-width: 480px) {
     display: none;
+  }
+`;
+
+
+export const NavLinks = styled.div`
+  display: flex;
+  gap: 20px;
+  align-items: center;
+`;
+
+export const NavLink = styled(Link)`
+  text-decoration: none;
+  color: ${({ theme }) => theme.text};
+  font-weight: 500;
+  transition: color 0.3s;
+
+  &:hover {
+    color: ${({ theme }) => theme.button};
+  }
+`;
+
+export const LogoutButton = styled.button`
+  background-color: ${({ theme }) => theme.deleteButton};
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+
+  &:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
   }
 `;

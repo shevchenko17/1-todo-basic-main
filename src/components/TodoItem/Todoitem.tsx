@@ -6,7 +6,7 @@ import { editTodo, toggleTodoStatus, removeTodo } from '../../store/todoSlice';
 import EditTodo from '../EditTodo/EditTodo';
 import type { Todo } from '../../types/todo';
 import * as S from './TodoItem.styles';
-import { Trash2, Pencil} from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 
 interface TodoItemProps {
   todo: Todo;
@@ -16,28 +16,37 @@ interface TodoItemProps {
 
 const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const [isEditing, setIsEditing] = useState(false);
-const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
 
-const handleSave = (newText: string) => {
-  dispatch(editTodo({ id: todo.id, text: newText, completed: todo.completed }));
-  setIsEditing(false);
-};
+  const handleSave = (newText: string) => {
+    dispatch(editTodo({ id: todo.id, text: newText, completed: todo.completed }));
+    setIsEditing(false);
+  };
 
-const handleToggle = () => {
-  dispatch(toggleTodoStatus(todo.id));
-};
+  const handleToggle = () => {
+    dispatch(toggleTodoStatus(todo.id));
+  };
 
-const handleDelete = () => {
-  if (window.confirm('Вы уверены, что хотите удалить эту задачу?')) {
-    dispatch(removeTodo(todo.id));
-  }
-};
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить эту задачу?')) {
+      dispatch(removeTodo(todo.id));
+    }
+  };
 
   const handleCancel = () => {
     setIsEditing(false);
   };
 
-
+ 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ru-RU', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   if (isEditing) {
     return (
@@ -64,7 +73,7 @@ const handleDelete = () => {
 
       <S.Content $completed={todo.completed}>
         <S.Text>{todo.text}</S.Text>
-        <S.Date>{(todo.createdAt)}</S.Date>
+        <S.Date>{formatDate(todo.createdAt)}</S.Date>
       </S.Content>
 
       <S.Actions>
@@ -73,7 +82,7 @@ const handleDelete = () => {
           title="Редактировать задачу"
           aria-label="Редактировать задачу"
         >
-         <Pencil color="#ba3baf" />
+          <Pencil color="#ba3baf" />
           Редактировать
         </S.EditButton>
         

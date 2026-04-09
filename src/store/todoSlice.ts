@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import { fetchTodos, createTodo, updateTodo, deleteTodo, toggleTodo,  type FetchTodosResponse } from '../api/todos';
+import { fetchTodos, createTodo, updateTodo, deleteTodo, toggleTodo, type FetchTodosResponse } from '../api/todos';
 import type { Todo } from '../types/todo';
 
 interface TodoState {
@@ -22,7 +22,6 @@ const initialState: TodoState = {
   error: null,
 };
 
-
 export const loadTodos = createAsyncThunk(
   'todos/loadTodos',
   async ({ page, limit, filter }: { page: number; limit: number; filter: 'all' | 'active' | 'completed' }) => {
@@ -34,7 +33,6 @@ export const loadTodos = createAsyncThunk(
 export const addTodo = createAsyncThunk(
   'todos/addTodo',
   async (text: string, { dispatch, getState }) => {
-    console.log({ text }, "12")
     await createTodo(text);
     const state = getState() as { todos: TodoState };
     const { page, limit, filter } = state.todos;
@@ -42,20 +40,15 @@ export const addTodo = createAsyncThunk(
   }
 );
 
-
 export const editTodo = createAsyncThunk(
   'todos/editTodo',
-
   async ({ id, text, completed }: { id: number; text: string; completed: boolean }, { dispatch, getState }) => {
-console.log({id, text }, "12")
     await updateTodo(id, text, completed);
-
     const state = getState() as { todos: TodoState };
     const { page, limit, filter } = state.todos;
-    await dispatch(loadTodos({ page, limit, filter }));
+    dispatch(loadTodos({ page, limit, filter }));
   }
 );
-
 
 export const removeTodo = createAsyncThunk(
   'todos/removeTodo',
@@ -66,7 +59,6 @@ export const removeTodo = createAsyncThunk(
     dispatch(loadTodos({ page, limit, filter }));
   }
 );
-
 
 export const toggleTodoStatus = createAsyncThunk(
   'todos/toggleTodoStatus',
@@ -87,7 +79,7 @@ const todoSlice = createSlice({
     },
     setLimit(state, action: PayloadAction<number>) {
       state.limit = action.payload;
-      state.page = 1; 
+      state.page = 1;
     },
     setFilter(state, action: PayloadAction<'all' | 'active' | 'completed'>) {
       state.filter = action.payload;
@@ -96,7 +88,6 @@ const todoSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    
       .addCase(loadTodos.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -105,7 +96,6 @@ const todoSlice = createSlice({
         state.loading = false;
         state.todos = action.payload.data;
         state.total = action.payload.total;
-     
         state.page = action.payload.page;
         state.limit = action.payload.limit;
       })
@@ -113,7 +103,6 @@ const todoSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to load todos';
       })
-    
       .addCase(addTodo.pending, (state) => {
         state.loading = true;
       })
