@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';  //прямо
+import axios from 'axios';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = 'https://server-auth-rrgb.onrender.com';
 
 interface AuthState {
   user: any;

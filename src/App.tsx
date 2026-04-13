@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';  // ← убрала Link
+import { BrowserRouter, Routes, Route } from 'react-router-dom';  
 import { ThemeProvider } from 'styled-components';
 import { ThemeProvider as CustomThemeProvider, useTheme } from './contexts/ThemeContext';
 import { GlobalStyles } from './styles/GlobalStyles';
@@ -10,7 +10,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
+
 
 const ThemedApp: React.FC = () => {
   const { theme } = useTheme();
@@ -33,7 +33,6 @@ const ThemedApp: React.FC = () => {
               <ProfilePage />
             </ProtectedRoute>
           } />
-          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

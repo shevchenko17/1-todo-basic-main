@@ -23,12 +23,10 @@ export const fetchTodos = async (
   return response.data;
 };
 
-
 export const createTodo = async (text: string): Promise<Todo> => {
   const response = await axios.post(`${API_URL}/todos`, { text });
   return response.data;
 };
-
 
 export const updateTodo = async (id: number, text: string, completed: boolean): Promise<Todo> => {
   const response = await axios.put(`${API_URL}/todos/${id}`, { text, completed });
