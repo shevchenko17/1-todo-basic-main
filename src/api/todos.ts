@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './axiosConfig';
 import type { Todo } from '../types/todo';
 const API_URL = 'https://server-auth-rrgb.onrender.com';
 

@@ -102,6 +102,7 @@ const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [age, setAge] = useState<string>('');
   const [passwordError, setPasswordError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status, error, token } = useSelector((state: RootState) => state.auth);
@@ -118,10 +119,19 @@ const RegisterPage: React.FC = () => {
     };
   }, [dispatch]);
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
 
+const validateEmail = (email: string) => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(email)) {
+    setEmailError('Введите корректный email (например: user@example.com)');
+    return false;
+  }
+  setEmailError('');
+  return true;
+};
+
+
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -155,6 +165,7 @@ const RegisterPage: React.FC = () => {
             required
             placeholder="user@example.com"
           />
+         {emailError && <ErrorMessage>{emailError}</ErrorMessage>}
         </FormGroup>
         <FormGroup>
           <Label>Пароль (минимум 6 символов)</Label>

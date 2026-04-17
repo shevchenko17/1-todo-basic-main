@@ -44,12 +44,9 @@ const Header: React.FC = () => {
           aria-label={`Переключить на ${theme === 'light' ? 'тёмную' : 'светлую'} тему`}
           title={`Текущая тема: ${theme === 'light' ? 'светлая' : 'тёмная'}`}
         >
-          <S.ThemeIcon>
-            {theme === 'light' ? '🌙' : '☀️'}
-          </S.ThemeIcon>
           <S.ThemeText>
-            {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
-          </S.ThemeText>
+          {theme === 'light' ? '🌙 Тема' : '☀️ Тема'}
+        </S.ThemeText>
         </S.ThemeToggle>
       </S.NavLinks>
     </S.HeaderContainer>

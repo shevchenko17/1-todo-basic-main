@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import * as S from './AddTodo.styles';
-import { useTodos } from '../../contexts/TodoContext';
+
 
 
 
 
 const AddTodo: React.FC = () => {
   
-  const { addTodo } = useTodos();
+  
   const [text, setText  ] = useState('');
   const [error, setError] = useState('');
 
@@ -19,7 +19,7 @@ const AddTodo: React.FC = () => {
       return;
     }
       
-addTodo(text)
+
     setError('');
     setText('');
   };

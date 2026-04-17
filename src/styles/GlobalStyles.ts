@@ -15,6 +15,7 @@ export const GlobalStyles = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease, color 0.3s ease;
     min-height: 100vh;
+     background-color: ${({ theme }) => theme.background || theme.body};
   }
 
   code {

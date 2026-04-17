@@ -32,7 +32,7 @@ const ThemedApp: React.FC = () => {
             <ProtectedRoute>
               <ProfilePage />
             </ProtectedRoute>
-          } />
+          } />ю. ьждл
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
